@@ -1,5 +1,10 @@
+import Connection from "./connection.js";
 
 export default class WorkArea{
+    inputs = [];
+    outputs = [];
+    connections = [];
+
     constructor( layer ){
         this.layer = layer ;
 
@@ -7,21 +12,56 @@ export default class WorkArea{
         this.activeConnection = new Konva.Line({ points : [], stroke : "white", strokeWidth : 3 });
         
         layer.add( this.activeConnection );
-        
-        // this.layer.getStage().on("mousemove", e => {
-        //     if( this.activeNode ){
-        //         const { sx, sy } = this.activeNode.position()
-        //         const ex = e.evt.clientX, ey = e.evt.clientY ;
-        //         console.log(ex, ey)
-        //         this.activeConnection.points([ sx, sy, ex, ey ])
-        //     }
-        // })
     }
+
     add( gate ){
         this.layer.add( gate.getShape() ) 
     }
+
+    addListeners( stage ){
+        stage.on('mousemove', () => this.onMouseMove( stage.getPointerPosition() ) );
+        stage.on('mouseup', () => this.onMouseUp() );
+    }
+
+    onResize(){
+
+    }
+
+    onMouseMove( mouse ){
+        if( this.activeNode ){
+            this.activeConnection.visible(true);
+            const start = this.activeNode.getShape().absolutePosition(),
+                  end = mouse ;
+            this.activeConnection.points([ start.x, start.y, end.x, end.y ])
+        }
+    } 
+
+    onMouseUp(){
+        this.activeNode = null ;
+        this.activeConnection.visible(false);
+    }
+
     startConnection( node ){
         this.activeNode = node ;
+    }
+
+    updateConnections(){
+        this.connections.forEach( connection => {
+
+        })
+    }
+
+    endConnection( node ){
+        if( this.activeNode && node && this.activeNode != node ){
+            let a = this.activeNode,
+                  b = node;
+            b.type == "output" && ([ a, b ] = [ b, a ]);
+            const connection = new Connection( a, b );
+            this.layer.add( connection.getShape() )
+            this.connections.push( connection );
+        }
+        console.log(this.connections);
+        this.activeNode = null ;
     }
     compile(){
 

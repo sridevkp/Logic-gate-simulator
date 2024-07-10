@@ -7,24 +7,27 @@ function setup(){
         width : window.innerWidth,
         height : window.innerHeight
     });
-    window.addEventListener("resize", e => {
-        stage.width  = window.innerWidth;
-        stage.height = window.innerHeight; 
-    })
     
     const layer = new Konva.Layer();
     
     stage.add(layer);
     layer.draw();
-
+    
     const work = new WorkArea( layer );
+    work.addListeners( stage )
+    
+    window.addEventListener("resize", e => {
+        stage.width(  window.innerWidth  );
+        stage.height( window.innerHeight ); 
+        work.onResize();
+    })
 
     const centreX = stage.width() /2 ,
           centreY = stage.height()/2
 
-    work.add( new Not( centreX -100, centreY -100) );
-    work.add( new And( centreX, centreY ) );
-    work.add( new OR( centreX -100, centreY + 100) );
+    work.add( new Not( work, centreX -100, centreY -100) );
+    work.add( new And( work, centreX, centreY ) );
+    work.add( new OR(  work, centreX -100, centreY + 100) );
 }
 
 function draw(){
