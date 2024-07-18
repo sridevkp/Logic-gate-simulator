@@ -51,7 +51,12 @@ export default class Node extends Konva.Circle{
     }
 
     removeConnection( connection ){
-        this.connections = this.connections.filter( con => con != connection);
+        this.connections = this.connections.filter( con => !con.equals(connection));
+    }
+
+    disconnectAndRemove(){
+        this.connections.forEach( con => con.disconnectAndRemove() );
+        this.destroy();
     }
 
     propagate(){

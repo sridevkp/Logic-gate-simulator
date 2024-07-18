@@ -19,7 +19,7 @@ export default class Circuit{
         this.createNodes(inputs, false, true, this.inputs);
         this.createNodes(outputs, true, false, this.outputs);
 
-        this.positionWorkNodes(width, height);
+        this.positionCircuitNodes(width, height);
     }
 
     createNodes(count, isInput, controlled, targetArray) {
@@ -30,7 +30,7 @@ export default class Circuit{
         }
     }
 
-    positionWorkNodes(width, height, gap = 50, pad = 50) {
+    positionCircuitNodes(width, height, gap = 50, pad = 50) {
         const positionNodes = (nodes, startX) => {
             let startY = (height - gap * (nodes.length - 1)) / 2;
             nodes.forEach((node, idx) => {
@@ -42,13 +42,23 @@ export default class Circuit{
         positionNodes(this.outputs, width - pad);
     }
 
+    addCircuitNode( isInput ){
+        this.createNodes(1, isInput, isInput, !isInput ? this.inputs : this.outputs)
+    }
+
+    removeCircuitNode( isInput ){
+        const collection = isInput ? this.inputs : this.outputs;
+        const node = collection.pop();
+        node.disconnectAndRemove();
+    }
+
     add( gate ){
         this.gates.push( gate );
         this.layer.add( gate ) ;
     }
 
     onResize(width, height) {
-        this.positionWorkNodes(width, height);
+        this.positionCircuitNodes(width, height);
         this.connections.forEach( con => con.updateLine() );
     }
 
@@ -89,7 +99,7 @@ export default class Circuit{
                 this.layer.add( connection )
                 this.connections.push( connection );
             }else{
-                con.removeSelf()
+                con.disconnectAndRemove()
                 this.connections = this.connections.filter( c => con != c )
             }
         }

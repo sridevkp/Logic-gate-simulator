@@ -12,5 +12,20 @@
 </head>
 <body>
     <div id="container"></div>
+    <footer>
+        <div class="library" id="library">
+        </div>
+    </footer>
+    <script>
+        function createGateElement( gateName ){
+            const gate = document.createElement('div');
+            gate.classList.add('gate');
+            gate.draggable = true ;
+            const label = document.createElement('p');
+            label.textContent = gateName 
+            gate.appendChild( label )
+            return gate
+        }
+    </script>
 </body>
 </html>

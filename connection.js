@@ -24,10 +24,11 @@ export default class Connection extends Konva.Line {
         }
     }
 
-    removeSelf() {
+    disconnectAndRemove() {
         this.o.removeConnection(this);
         this.i.removeConnection(this);
-        this.remove();
+        this.o.update();
+        this.destroy();
     }
 
     getConnectorPoints(from, to, padding) {
@@ -48,6 +49,10 @@ export default class Connection extends Konva.Line {
       this.points(this.getConnectorPoints(start, end, 10));
     }
   
+    equals( b ){
+        return this.i == b.i && this.o == b.o
+    }
+
     propagate() {
         this.o.update();
         this.o.propagate();

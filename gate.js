@@ -89,6 +89,12 @@ export default class Gate extends Konva.Group{
         this.circuit.endConnection( node );
     }
 
+    disconnectAndRemove(){
+        this.inputs.forEach( node => node.disconnectAndRemove() );
+        this.outputs.forEach( node => node.disconnectAndRemove() );
+        this.destroy();
+    }
+
     activate(){
         console.log("activating gate")
     }
