@@ -1,51 +1,54 @@
-import Node from "./node.js";
+import Node from "./nodes.js";
 
 
-export default class Gate{
+export default class Gate extends Konva.Group{
     inputs = [];
     outputs = [];
     connections = [];
     gap = 20 ;
     fontSize = 20 ;
 
-    constructor( name, work, x , y, iNodesCount, oNodesCount, width = 80, fill = "grey", fillLabel = "white"){
+    constructor( name, circuit, x , y, iNodesCount, oNodesCount, width = 80){
+        super({ x, y })
+
         this.name = name ;
-        this.work = work ;
+        this.circuit = circuit ;
 
         const height = 40 + (Math.max(iNodesCount,oNodesCount) -1)* this.gap;
 
-        this.xformGroup = new Konva.Group({ x, y })
-
         this.shape = new Konva.Rect({
-            x : 0, y : 0, width, fill, height,
+            x : 0, y : 0, width, height,
+            fill : Settings.theme.gate ,
             stroke : "white",  draggable : true,
             strokeWidth : 0 ,  cornerRadius : 3,
-            shadowOffsetX : 2, shadowOffsetY : 2,
+            shadowOffsetX : 4, shadowOffsetY : 4,
             shadowOpacity:0.5, shadowBlur: 10,
         })
-        this.xformGroup.add( this.shape );
+        this.add( this.shape );
 
         this.label = new Konva.Text({
             x: width / 2 - name.length * this.fontSize/3 ,
             y: height /2 - this.fontSize/2,
-            fill: fillLabel, text: name,
+            fill: Settings.theme.label , text: name,
             fontFamily: 'Calibri', fontStyle : "bold" , align : "center",
             fontSize  : this.fontSize, listening : false,
         });
-        this.xformGroup.add( this.label );
+        this.add( this.label );
 
         let iy = (height - this.gap *(iNodesCount-1))/2 ;
         for( let i = 0; i < iNodesCount; i++){
-            const iNode = new Node(this, "input", 0, iy + i *this.gap) ;
-            this.xformGroup.add( iNode.getShape() );
+            const iNode = new Node(this, true, 0, iy + i *this.gap) ;
+            this.add( iNode );
             this.inputs.push( iNode );
         }
         iy = (height - this.gap *(oNodesCount-1))/2;
         for( let i = 0; i < oNodesCount; i++){
-            const oNode = new Node(this, "output", width, iy + i *this.gap);
-            this.xformGroup.add( oNode.getShape() );
-            this.inputs.push( oNode );
+            const oNode = new Node(this, false, width, iy + i *this.gap);
+            this.add( oNode );
+            this.outputs.push( oNode );
         }
+
+        this.activate();
 
         this.shape.on('mouseenter', () => {
             document.body.style.cursor = 'grab';
@@ -63,53 +66,64 @@ export default class Gate{
         });
         this.shape.on('dragmove', () => {
             const delta = this.shape.position();
-            this.xformGroup.move(delta);
+            this.move(delta);
             this.shape.position({x:0,y:0})
         })
         this.shape.on('dragend', () => {
             document.body.style.cursor = 'grab';
             this.shape.shadowBlur(10);
-            this.shape.shadowOffsetX(5);
-            this.shape.shadowOffsetY(5);
+            this.shape.shadowOffsetX(4);
+            this.shape.shadowOffsetY(4);
         });
     }
 
-    getShape(){
-        return this.xformGroup ;
+    onmove( cb ){
+        this.shape.on("dragmove", cb );
     }
 
-    onmove( cb ){
-        this.shape.on("dragmove", cb )
+    startConnection( node ){
+        this.circuit.startConnection( node );
+    }
+
+    endConnection( node ){
+        this.circuit.endConnection( node );
     }
 
     activate(){
+        console.log("activating gate")
+    }
 
+    propagate(){
+        this.outputs.forEach( node => node.propagate() )
     }
 }
 
 export class Not extends Gate {
-    constructor( work, x, y ){
-        super("NOT", work, x, y , 1, 1 );
+    constructor( circuit, x, y ){
+        super("NOT", circuit, x, y , 1, 1, 60 );
     }
     activate(){
-
+        this.outputs[0].setState( !this.inputs[0].state );
+        this.propagate();
     }
 }
 
 export class And extends Gate {
-    constructor( work, x, y ){
-        super("AND", work, x, y , 2, 1 );
+    constructor( circuit, x, y ){
+        super("AND", circuit, x, y , 2, 1 );
     }
     activate(){
-
+        this.outputs[0].setState( this.inputs[0].state && this.inputs[1].state );
+        this.propagate();
     }
 }
 
 export class OR extends Gate {
-    constructor( work, x, y ){
-        super("OR", work, x, y , 2, 1 );
+    constructor( circuit, x, y ){
+        super("OR", circuit, x, y , 2, 1, 80 );
     }
     activate(){
-
+        this.outputs[0].setState( this.inputs[0].state || this.inputs[1].state );
+        this.propagate();
     }
 }

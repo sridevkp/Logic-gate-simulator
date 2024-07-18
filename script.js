@@ -1,5 +1,5 @@
 import { And, Not, OR } from "./gate.js";
-import WorkArea from "./work.js";
+import Circuit from "./circuit.js";
 
 function setup(){
     const stage = new Konva.Stage({
@@ -13,21 +13,23 @@ function setup(){
     stage.add(layer);
     layer.draw();
     
-    const work = new WorkArea( layer );
-    work.addListeners( stage )
+    const circuit = new Circuit( layer, 3, 3, stage.width(), stage.height() );
     
     window.addEventListener("resize", e => {
         stage.width(  window.innerWidth  );
         stage.height( window.innerHeight ); 
-        work.onResize();
+        circuit.onResize( stage.width(), stage.height() );
     })
+    stage.on('mouseup', () => circuit.onMouseUp());
+    stage.on('mousemove', () => circuit.onMouseMove(stage.getPointerPosition()))
+    
 
     const centreX = stage.width() /2 ,
           centreY = stage.height()/2
 
-    work.add( new Not( work, centreX -100, centreY -100) );
-    work.add( new And( work, centreX, centreY ) );
-    work.add( new OR(  work, centreX -100, centreY + 100) );
+    circuit.add( new Not( circuit, centreX -100, centreY -100) );
+    circuit.add( new And( circuit, centreX, centreY ) );
+    circuit.add( new OR(  circuit, centreX -100, centreY + 100) );
 }
 
 function draw(){

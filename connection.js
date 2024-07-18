@@ -1,34 +1,60 @@
-export default class Connection{
-    constructor( i , o  ){
-        this.line = new Konva.Line({ points : [], stroke : "white", strokeWidth : 2 });
+export default class Connection extends Konva.Line {
+    constructor(i, o) {
+        super({ points: [], stroke: "white", strokeWidth: 2 });
         this.i = i;
         this.o = o;
-        this.updateLine()
-
-        this.i.onmove( () => this.updateLine() );
-        this.o.onmove( () => this.updateLine() );
-
-        this.line.on("mouseenter", () => {
+    
+        this.updateLine();
+        this.i.onmove(() => this.updateLine());
+        this.o.onmove(() => this.updateLine());
+    
+        this.on("mouseenter", () => {
             document.body.style.cursor = "pointer";
-            this.line.strokeWidth(3);
-        })
-        this.line.on("mouseleave", () => {
+            this.strokeWidth(3);
+        });
+        this.on("mouseleave", () => {
             document.body.style.cursor = "default";
-            this.line.strokeWidth(2);
-        })
+            this.strokeWidth(2);
+        });
+    
+        if (this.valid()) {
+            this.i.addConnection(this);
+            this.o.addConnection(this);
+            this.propagate();
+        }
     }
-    updateLine(){
-        const start = this.i.getShape().absolutePosition(),
-              end = this.o.getShape().absolutePosition();
-        this.line.points([ start.x, start.y, end.x, end.y ]);
+
+    removeSelf() {
+        this.o.removeConnection(this);
+        this.i.removeConnection(this);
+        this.remove();
     }
-    fire(){
-        this.o.state = this.i.state ;
+
+    getConnectorPoints(from, to, padding) {
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      let angle = Math.atan2(-dy, dx);
+      return [
+        from.x + -padding * Math.cos(angle + Math.PI),
+        from.y + padding * Math.sin(angle + Math.PI),
+        to.x + -padding * Math.cos(angle),
+        to.y + padding * Math.sin(angle),
+      ];
     }
-    valid(){
-        return this.i && this.o 
+  
+    updateLine() {
+      const start = this.i.absolutePosition(),
+              end = this.o.absolutePosition();
+      this.points(this.getConnectorPoints(start, end, 10));
     }
-    getShape(){
-        return this.line
+  
+    propagate() {
+        this.o.update();
+        this.o.propagate();
     }
-}
+  
+    valid() {
+      return this.i && this.o;
+    }
+  }
+  
