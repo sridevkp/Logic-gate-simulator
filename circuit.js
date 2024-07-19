@@ -7,7 +7,7 @@ export default class Circuit{
     outputs = [];
     connections = [];
 
-    constructor( layer, inputs, outputs, width, height ){
+    constructor( layer, inputs, outputs ){
         // this.stage = stage ;
         this.layer = layer ;
 
@@ -19,7 +19,7 @@ export default class Circuit{
         this.createNodes(inputs, false, true, this.inputs);
         this.createNodes(outputs, true, false, this.outputs);
 
-        this.positionCircuitNodes(width, height);
+        this.positionCircuitNodes(window.innerWidth, window.innerHeight);
     }
 
     createNodes(count, isInput, controlled, targetArray) {
@@ -43,13 +43,19 @@ export default class Circuit{
     }
 
     addCircuitNode( isInput ){
-        this.createNodes(1, isInput, isInput, !isInput ? this.inputs : this.outputs)
+        this.createNodes(1, isInput, !isInput, isInput ? this.outputs : this.inputs);
+        this.positionCircuitNodes(window.innerWidth, window.innerHeight);
+        this.inputs.forEach( node => node.onmove() );
+        this.outputs.forEach( node => node.onmove() );
     }
 
     removeCircuitNode( isInput ){
-        const collection = isInput ? this.inputs : this.outputs;
+        const collection = isInput ? this.outputs : this.inputs;
         const node = collection.pop();
-        node.disconnectAndRemove();
+        node?.disconnectAndRemove();
+        this.positionCircuitNodes(window.innerWidth, window.innerHeight);
+        this.inputs.forEach( node => node.onmove() );
+        this.outputs.forEach( node => node.onmove() );
     }
 
     add( gate ){

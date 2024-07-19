@@ -1,6 +1,8 @@
 export default class Node extends Konva.Circle{
     connections = [];
     state = false ;
+    onmoveCb;
+
     constructor( owner, isInput, x = 0, y = 0, radius = 7, controlled=false){
         super({
             x, y, radius, strokeWidth : 0,
@@ -17,12 +19,6 @@ export default class Node extends Konva.Circle{
         this.on("mouseup", () => {
             owner.endConnection( this );
         })
-        if( controlled ){
-            this.on("click", () => {
-                this.setState( !this.state );
-                this.propagate()
-            })
-        }
         this.on("mouseenter", () => {
             document.body.style.cursor = "pointer";
             this.strokeWidth(2);
@@ -31,8 +27,15 @@ export default class Node extends Konva.Circle{
             document.body.style.cursor = "default";
             this.strokeWidth(0);
         })
+        
+        controlled && this.on("click", () => {
+                            this.setState( !this.state );
+                            this.propagate();
+                        })
     }
     onmove( cb ){
+        if( ! cb && this.onmoveCb ) return this.onmoveCb() ;
+        this.onmoveCb = cb ;
         this.owner?.onmove && this.owner.onmove( cb )
     }
 

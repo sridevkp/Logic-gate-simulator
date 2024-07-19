@@ -1,16 +1,32 @@
 import { And, Not, OR } from "./gate.js";
 import Circuit from "./circuit.js";
 
+var stage ;
+var circuit ;
+
+document.getElementById("add-input").addEventListener('click', () => {
+    circuit.addCircuitNode( false )
+})
+document.getElementById("remove-input").addEventListener('click', () => {
+    circuit.removeCircuitNode( false )
+})
+document.getElementById("add-output").addEventListener('click', () => {
+    circuit.addCircuitNode( true )
+})
+document.getElementById("remove-output").addEventListener('click', () => {
+    circuit.removeCircuitNode( true )
+})
+
 function registerGate( gateName, circuit, Gate ){
     const gateElement = createGateElement( gateName );
     document.getElementById("library").appendChild( gateElement )
     gateElement.addEventListener('dragend', e => {
-        circuit.add( new Gate( circuit, e.x, e.y ))
+        e.y < window.innerHeight - 200 && circuit.add( new Gate( circuit, e.x, e.y ));
     } )
 }
 
 function setup(){
-    const stage = new Konva.Stage({
+    stage = new Konva.Stage({
         container: 'container', 
         width : window.innerWidth,
         height : window.innerHeight
@@ -21,7 +37,7 @@ function setup(){
     stage.add(layer);
     layer.draw();
     
-    const circuit = new Circuit( layer, 3, 3, stage.width(), stage.height() );
+    circuit = new Circuit( layer, 3, 3, stage.width(), stage.height() );
     
     window.addEventListener("resize", e => {
         stage.width(  window.innerWidth  );

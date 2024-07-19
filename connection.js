@@ -46,7 +46,7 @@ export default class Connection extends Konva.Line {
     updateLine() {
       const start = this.i.absolutePosition(),
               end = this.o.absolutePosition();
-      this.points(this.getConnectorPoints(start, end, 10));
+      this.points(this.getConnectorPoints(start, end, 12));
     }
   
     equals( b ){

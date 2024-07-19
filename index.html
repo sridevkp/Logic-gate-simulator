@@ -12,13 +12,26 @@
 </head>
 <body>
     <div id="container"></div>
+
     <footer>
+        <div class="options">
+            <div class="option-group left">
+                <span id="remove-input">-</span>
+                <span id="add-input">+</span>
+            </div>
+
+            <div class="option-group right">
+                <span id="remove-output">-</span>
+                <span id="add-output">+</span>
+            </div>
+        </div>
         <div class="library" id="library">
         </div>
     </footer>
+
     <script>
         function createGateElement( gateName ){
-            const gate = document.createElement('div');
+            const gate = document.createElement('button');
             gate.classList.add('gate');
             gate.draggable = true ;
             const label = document.createElement('p');

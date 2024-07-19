@@ -70,11 +70,15 @@ export default class Gate extends Konva.Group{
             this.shape.position({x:0,y:0})
         })
         this.shape.on('dragend', () => {
+            if( this.y() > window.innerHeight - 200 ) return this.disconnectAndRemove();
             document.body.style.cursor = 'grab';
             this.shape.shadowBlur(10);
             this.shape.shadowOffsetX(4);
             this.shape.shadowOffsetY(4);
         });
+        this.on('click', e => {
+            e.evt.button == 2 && this.disconnectAndRemove();
+        })
     }
 
     onmove( cb ){
