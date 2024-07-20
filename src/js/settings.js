@@ -23,7 +23,7 @@ const Themes = {
         gate : "#5f5f5f",
         label  : "white"
     },
-    luxury:{
+    royal:{
         "true" : "violet",
         "false": "purple",
         gate : "#5f5f5f",
