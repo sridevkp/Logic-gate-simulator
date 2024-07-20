@@ -117,7 +117,7 @@ export default class Circuit{
         if( existing ){
             console.log(existing);
             existing.disconnectAndRemove();
-            this.connections = this.connections.filter( con => !con.equals( existing ));
+            this.connections = this.connections.filter( con => con != existing );
         }
     }
 
