@@ -101,7 +101,6 @@ export default class Gate extends Konva.Group{
     }
 
     activate(){
-        console.log("activating gate")
     }
 
     propagate(){

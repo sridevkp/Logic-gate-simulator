@@ -97,23 +97,23 @@ export default class Circuit{
 
     endConnection( node ){
         if( this.activeNode && node && this.activeNode != node && this.activeNode.isInput != node.isInput ){
-            const connection = new Connection( this.activeNode, node );
-
-            const existingConnection = this.findConnection(connection) ;
-
-            if( !existingConnection ){
+            
+            const existing = this.findConnection(this.activeNode, node) ;
+            
+            if( !existing ){
+                const connection = new Connection( this.activeNode, node );
                 this.layer.add( connection )
                 this.connections.push( connection );
             }else{
-                existingConnection.disconnectAndRemove()
-                this.connections = this.connections.filter( c => existingConnection != c )
+                existing.disconnectAndRemove()
+                this.connections = this.connections.filter( c => existing != c )
             }
         }
         this.activeNode = null ;
     }
 
     removeConnection( a, b ){
-        const existing = this.findConnection( new Connection( a, b ) );
+        const existing = this.findConnection( a, b );
         if( existing ){
             console.log(existing);
             existing.disconnectAndRemove();
@@ -121,9 +121,9 @@ export default class Circuit{
         }
     }
 
-    findConnection( newcon ){
+    findConnection( a, b ){
         for( let con of this.connections) {
-            if( con.equals( newcon ) ) return con ;
+            if( con.hasMembers( a, b ) ) return con ;
         }
         return false ;
     }

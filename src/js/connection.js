@@ -21,14 +21,16 @@ export default class Connection extends Konva.Line {
         if (this.valid()) {
             this.i.addConnection(this.o);
             this.o.addConnection(this.i);
-            this.o.propagate();
+            this.i.update()
+                  .propagate();
         }
     }
 
     disconnectAndRemove() {
-        this.o.removeConnection(this);
-        this.i.removeConnection(this);
-        this.o.update();
+        this.o.removeConnection(this.i);
+        this.i.removeConnection(this.o);
+        this.i.update()
+              .propagate();
         this.destroy();
     }
 
@@ -50,8 +52,8 @@ export default class Connection extends Konva.Line {
       this.points(this.getConnectorPoints(start, end, 12));
     }
   
-    equals( b ){
-        return (this.i == b.i && this.o == b.o) || (this.o == b.i && this.i == b.o)
+    hasMembers( a, b ){
+        return (this.i == a && this.o == b) || (this.o == a && this.i == b)
     }
 
     valid() {

@@ -41,6 +41,7 @@ export default class Node extends Konva.Circle{
             this.setState(this.connections.some( node => node.state )) ;
             this.owner?.activate();
         }
+        return this;
     }
 
     setState( state ){
@@ -54,7 +55,7 @@ export default class Node extends Konva.Circle{
     }
 
     removeConnection( connection ){
-        this.connections = this.connections.filter( node => node == connection);
+        this.connections = this.connections.filter( node => node != connection);
     }
 
     disconnectAndRemove(){
