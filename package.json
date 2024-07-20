@@ -1,0 +1,15 @@
+{
+  "name": "gateway-logic-gate-simulator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "circuit.js",
+  "scripts": {
+    "deploy": "gh-pages -d ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "gh-pages": "^6.1.1"
+  }
+}

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gateway</title>
+    <!-- <script src="https://unpkg.com/konva@9/konva.min.js"></script> -->
+    <script src="/konva.min.js"></script>
+    <script src="/settings.js"></script>
+    <script src="/script.js" type="module" defer></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <button id="new">New circuit</button>
+        <button id="save">Save and register</button>
+    </header>
+    <div id="container"></div>
+
+    <footer>
+        <div class="options">
+            <div class="option-group left">
+                <span id="remove-input">-</span>
+                <span id="add-input">+</span>
+            </div>
+
+            <div class="option-group right">
+                <span id="remove-output">-</span>
+                <span id="add-output">+</span>
+            </div>
+        </div>
+        <div class="library" id="library">
+        </div>
+    </footer>
+
+    <script>
+        function createGateElement( gateName ){
+            const gate = document.createElement('button');
+            gate.classList.add('gate');
+            gate.draggable = true ;
+            const label = document.createElement('p');
+            label.textContent = gateName 
+            gate.appendChild( label )
+            return gate
+        }
+    </script>
+</body>
+</html>
