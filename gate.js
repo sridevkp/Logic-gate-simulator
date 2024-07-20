@@ -1,6 +1,5 @@
 import Node from "./nodes.js";
 
-
 export default class Gate extends Konva.Group{
     inputs = [];
     outputs = [];
@@ -48,8 +47,6 @@ export default class Gate extends Konva.Group{
             this.outputs.push( oNode );
         }
 
-        this.activate();
-
         this.shape.on('mouseenter', () => {
             document.body.style.cursor = 'grab';
             this.shape.strokeWidth(1)
@@ -70,14 +67,14 @@ export default class Gate extends Konva.Group{
             this.shape.position({x:0,y:0})
         })
         this.shape.on('dragend', () => {
-            if( this.y() > window.innerHeight - 200 ) return this.disconnectAndRemove();
+            if( this.y() > window.innerHeight - 200 ) return this.circuit?.remove(this);
             document.body.style.cursor = 'grab';
             this.shape.shadowBlur(10);
             this.shape.shadowOffsetX(4);
             this.shape.shadowOffsetY(4);
         });
         this.on('click', e => {
-            e.evt.button == 2 && this.disconnectAndRemove();
+            e.evt.button == 2 && this.circuit?.remove(this);
         })
     }
 
@@ -99,6 +96,10 @@ export default class Gate extends Konva.Group{
         this.destroy();
     }
 
+    removeConnection( a, b ){
+        this.circuit.removeConnection( a, b );
+    }
+
     activate(){
         console.log("activating gate")
     }
@@ -111,6 +112,7 @@ export default class Gate extends Konva.Group{
 export class Not extends Gate {
     constructor( circuit, x, y ){
         super("NOT", circuit, x, y , 1, 1, 60 );
+        this.activate();
     }
     activate(){
         this.outputs[0].setState( !this.inputs[0].state );
@@ -121,6 +123,7 @@ export class Not extends Gate {
 export class And extends Gate {
     constructor( circuit, x, y ){
         super("AND", circuit, x, y , 2, 1 );
+        this.activate();
     }
     activate(){
         this.outputs[0].setState( this.inputs[0].state && this.inputs[1].state );
@@ -131,6 +134,7 @@ export class And extends Gate {
 export class OR extends Gate {
     constructor( circuit, x, y ){
         super("OR", circuit, x, y , 2, 1, 80 );
+        this.activate();
     }
     activate(){
         this.outputs[0].setState( this.inputs[0].state || this.inputs[1].state );

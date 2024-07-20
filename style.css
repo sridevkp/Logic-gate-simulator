@@ -18,6 +18,15 @@ body{
 canvas{
     background-color: yellow;
 }
+header{
+    position: fixed;
+    padding: 1rem;
+    z-index: 100;
+
+    button{
+        font-weight: bold;
+    }
+}
 footer{
     background: linear-gradient(rgba(0, 0, 0, 0.0) 0%,rgba(0, 0, 0, 0.5) 30%, rgba(0, 0, 0, 0.8) 100%);
     position: fixed;
@@ -38,7 +47,7 @@ footer{
     display: flex;
     gap: 15px;
     padding: 0 5px;
-    overflow: scroll hidden;
+    overflow: auto hidden;
 }
 .gate{
     cursor: grab;

@@ -1,7 +1,6 @@
 export default class Node extends Konva.Circle{
     connections = [];
     state = false ;
-    onmoveCb;
 
     constructor( owner, isInput, x = 0, y = 0, radius = 7, controlled=false){
         super({
@@ -34,19 +33,20 @@ export default class Node extends Konva.Circle{
                         })
     }
     onmove( cb ){
-        if( ! cb && this.onmoveCb ) return this.onmoveCb() ;
-        this.onmoveCb = cb ;
         this.owner?.onmove && this.owner.onmove( cb )
     }
 
     update(){
-        this.isInput && (this.setState(this.connections.some( con => con.i.state ))) ;
-        this.owner.activate()
+        if(this.isInput){
+            this.setState(this.connections.some( node => node.state )) ;
+            this.owner?.activate();
+        }
     }
 
     setState( state ){
         this.state = state ;
         this.fill( state? Settings.theme.true : Settings.theme.false);
+        return this ;
     }
 
     addConnection( connection ){
@@ -54,17 +54,20 @@ export default class Node extends Konva.Circle{
     }
 
     removeConnection( connection ){
-        this.connections = this.connections.filter( con => !con.equals(connection));
+        this.connections = this.connections.filter( node => node == connection);
     }
 
     disconnectAndRemove(){
-        this.connections.forEach( con => con.disconnectAndRemove() );
+        this.connections.forEach( node => this.owner.removeConnection( this, node ) );
         this.destroy();
     }
 
     propagate(){
         this.isInput ? 
             this.owner.activate() : 
-            this.connections.forEach( connection => connection.propagate() )
+            this.connections.forEach( node => {
+                    node.update();
+                    node.propagate()
+                } )
     }
 }

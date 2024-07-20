@@ -45,8 +45,7 @@ export default class Circuit{
     addCircuitNode( isInput ){
         this.createNodes(1, isInput, !isInput, isInput ? this.outputs : this.inputs);
         this.positionCircuitNodes(window.innerWidth, window.innerHeight);
-        this.inputs.forEach( node => node.onmove() );
-        this.outputs.forEach( node => node.onmove() );
+        this.updateConnections();
     }
 
     removeCircuitNode( isInput ){
@@ -54,13 +53,19 @@ export default class Circuit{
         const node = collection.pop();
         node?.disconnectAndRemove();
         this.positionCircuitNodes(window.innerWidth, window.innerHeight);
-        this.inputs.forEach( node => node.onmove() );
-        this.outputs.forEach( node => node.onmove() );
+        this.updateConnections();
     }
 
     add( gate ){
+        console.log(`${gate.name} Gate added`)
         this.gates.push( gate );
         this.layer.add( gate ) ;
+    }
+
+    remove( gate ){
+        console.log(`${gate.name} Gate Removed`)
+        gate.disconnectAndRemove();
+        this.gates = this.gates.filter( g => g != gate)
     }
 
     onResize(width, height) {
@@ -87,43 +92,51 @@ export default class Circuit{
     }
 
     updateConnections(){
-        this.connections.forEach( connection => {
-            
-        })
+        this.connections.forEach( connection => connection.updateLine());
     }
 
     endConnection( node ){
         if( this.activeNode && node && this.activeNode != node && this.activeNode.isInput != node.isInput ){
-            let a = this.activeNode,
-                  b = node;
-            ! b.isInput && ([ a, b ] = [ b, a ]);
-            const connection = new Connection( a, b );
+            const connection = new Connection( this.activeNode, node );
 
-            const con = this.conExists(connection) ;
+            const existingConnection = this.findConnection(connection) ;
 
-            if( !con ){
+            if( !existingConnection ){
                 this.layer.add( connection )
                 this.connections.push( connection );
             }else{
-                con.disconnectAndRemove()
-                this.connections = this.connections.filter( c => con != c )
+                existingConnection.disconnectAndRemove()
+                this.connections = this.connections.filter( c => existingConnection != c )
             }
         }
         this.activeNode = null ;
     }
 
-    conExists( newcon ){
+    removeConnection( a, b ){
+        const existing = this.findConnection( new Connection( a, b ) );
+        if( existing ){
+            console.log(existing);
+            existing.disconnectAndRemove();
+            this.connections = this.connections.filter( con => !con.equals( existing ));
+        }
+    }
+
+    findConnection( newcon ){
         for( let con of this.connections) {
-            if( con.i == newcon.i && con.o == newcon.o ) return con ;
+            if( con.equals( newcon ) ) return con ;
         }
         return false ;
+    }
+
+    destroy(){
+        this.gates.forEach( gate => gate.destroy() );
+        this.inputs.forEach( node => node.destroy() );
+        this.outputs.forEach( node => node.destroy() );
+        this.connections.forEach( con => con.destroy() );
     }
 
     activate(){
         
     }
 
-    compile(){
-
-    }
 }

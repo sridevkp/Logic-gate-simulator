@@ -3,7 +3,8 @@ export default class Connection extends Konva.Line {
         super({ points: [], stroke: "white", strokeWidth: 2 });
         this.i = i;
         this.o = o;
-    
+        o.isInput && ([ this.i, this.o ] = [ this.o, this.i ]);
+
         this.updateLine();
         this.i.onmove(() => this.updateLine());
         this.o.onmove(() => this.updateLine());
@@ -18,9 +19,9 @@ export default class Connection extends Konva.Line {
         });
     
         if (this.valid()) {
-            this.i.addConnection(this);
-            this.o.addConnection(this);
-            this.propagate();
+            this.i.addConnection(this.o);
+            this.o.addConnection(this.i);
+            this.o.propagate();
         }
     }
 
@@ -50,14 +51,9 @@ export default class Connection extends Konva.Line {
     }
   
     equals( b ){
-        return this.i == b.i && this.o == b.o
+        return (this.i == b.i && this.o == b.o) || (this.o == b.i && this.i == b.o)
     }
 
-    propagate() {
-        this.o.update();
-        this.o.propagate();
-    }
-  
     valid() {
       return this.i && this.o;
     }
